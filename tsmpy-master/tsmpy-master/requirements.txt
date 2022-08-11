@@ -1,3 +1,0 @@
-PuLP
-matplotlib
-networkx
