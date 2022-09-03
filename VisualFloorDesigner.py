@@ -17,6 +17,7 @@ class App(tk.Tk):
         tk.Tk.__init__(self) # Initialize main window
         self.title("FloorDesign - GUI")
         self.tileSelect = tileSelector(self)
+        self.toolSelect = toolSelector(self)
         self.mainloop() # Blocking call to render the app
 
 app = App()

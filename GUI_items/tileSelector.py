@@ -4,9 +4,8 @@ import tkinter as tk
 from tkinter import FLAT, RIDGE
 # Import ability to search OS directories
 import os
-
-import PIL.ImageTk
-import PIL.Image
+# Import tile object class
+from .tile import Tile
 
 # Sizing values, static throughout code
 frameHeight = 150
@@ -15,8 +14,8 @@ frameBorderWidth = 5
 frameRelief = RIDGE
 baselinePad = 10
 scrollbarWidth = 20
-canvasWidth = 145
-canvasHeight = frameHeight - 2*baselinePad
+canvasWidth = 142
+canvasHeight = frameHeight - 1.5*baselinePad
 canvasMaxLen = 1000
 buttonRelief = FLAT
 buttonSize = 32
@@ -27,12 +26,13 @@ class tileSelector(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent, height=frameHeight, width=frameWidth, borderwidth=frameBorderWidth, relief=frameRelief)
         self.parent = parent # The host window is the parent of this widget
-        
-        # Make a canvas that holds the different options
-        self.selectorCanvas = selectorCanvas(self)
 
         # Use a scrollbar in case there are many icons to choose from
         self.ybar = tk.Scrollbar(self)
+
+        # Make a canvas that holds the different options
+        self.selectorCanvas = selectorCanvas(self)
+
         self.ybar["width"] = scrollbarWidth
         self.ybar["orient"] = "vertical"
         self.ybar["command"] = self.selectorCanvas.yview
@@ -40,9 +40,6 @@ class tileSelector(tk.Frame):
 
         # Make the widget size static regardless of what it contains
         self.grid_propagate(False)
-
-        # Usage properties
-        self.tileOptions = [] # Holds all the currently loaded options
 
         # Add the widget to the window
         self.grid(row=0, column=0, padx=baselinePad, pady=baselinePad, sticky="N") # Sticky makes the cell stay north
@@ -55,7 +52,7 @@ class selectorCanvas(tk.Canvas):
         self["width"] = canvasWidth     # Control the display section width
         self["height"] = canvasHeight    # Control the display section height
         self["scrollregion"] = (0,0,0,canvasMaxLen)
-        # self["yscrollcommand"] = self.parent.ybar.set
+        self["yscrollcommand"] = self.parent.ybar.set
         self.grid(column=0, row=0)
 
         # Create a container for loaded tiles
@@ -98,6 +95,10 @@ class selectorCanvas(tk.Canvas):
             if self.nextButtonPosition[0] > canvasWidth - buttonSize:
                 self.nextButtonPosition = (0, self.nextButtonPosition[1] + buttonSize + 2)
 
+    def selectTile(self, i):
+        # TODO
+        print("not done")
+
 class TileButton(tk.Button):
     def __init__(self, parent, imagePath, buttonPosition):
         tk.Button.__init__(self, parent, relief=FLAT)
@@ -111,12 +112,3 @@ class TileButton(tk.Button):
         self.tile = Tile(self.path, self.parent.tileSize)
         self["image"] = self.tile.image
         self["command"] = lambda i = len(parent.tileOpts): parent.selectTile(i)
-
-        
-class Tile(): #class structure to hold images
-    def __init__(self, path, size):
-        self.size = size
-        self.path = path
-        self.image  = PIL.Image.open(open(path, 'rb')) #open a regular PIL image
-        self.image = self.image.resize((self.size, self.size)) #resize the image to size we want tiles
-        self.image = PIL.ImageTk.PhotoImage(self.image) #convert image to a tk displayable image
