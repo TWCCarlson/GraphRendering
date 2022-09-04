@@ -45,9 +45,6 @@ class selectorCanvas(tk.Canvas):
         self["width"] = canvasWidth
         self["height"] = canvasHeight
         self.grid(column=0, row=0, sticky = "n")
-
-        # Usage props
-        self.currentTool = []
         self.tileSize = buttonSize
 
         # Image paths
@@ -71,6 +68,8 @@ class selectorCanvas(tk.Canvas):
         # Fill erase tool
         self.fillErase = tk.Button(self, command=self.fillErase, image=self.fillErase_img, width=buttonWidth)
         self.fillErase.grid(column=3, row=0)
+
+        self.paint()
 
 
     def paint(self):
