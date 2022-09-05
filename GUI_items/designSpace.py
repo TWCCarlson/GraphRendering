@@ -65,6 +65,7 @@ class designCanvas(tk.Canvas):
         # Binding inputs
         self.bind("<Button-1>", self.selectTile)    # Single click
         self.bind("<B1-Motion>", self.selectTile)   # Click-drag
+        self.bind("<ButtonRelease-1>", self.setBoxSelect)
 
         # Render component
         self.grid(column=0, row=0)
@@ -82,15 +83,111 @@ class designCanvas(tk.Canvas):
         self.setTile()
 
     def setTile(self):
+        # Reference variable to the map data
+        mapData = self.parent.parent.mapData
+
         if self.parent.parent.toolSelect.selectorCanvas.tool == "paint":
-            print("paint tile")
+            # Capture information about what's being painted
+            currentImage = self.parent.parent.tileSelect.currentImage
+            currentImagePath = self.parent.parent.tileSelect.currentImagePath
+
+            # Remove whatever is there already if there is something
+            if mapData.canvasArray[self.selectedTile[1]][self.selectedTile[0]] != " ":
+                self.delete(mapData.canvasArray[self.selectedTile[1]][self.selectedTile[0]])
+            
+            # Draw the new tile in its place
+            paintImage = self.create_image(self.selectedTile[0]*tileSize, self.selectedTile[1]*tileSize, image=currentImage, anchor=tk.NW)
+            mapData.mapArray[self.selectedTile[1]][self.selectedTile[0]] = currentImagePath
+            mapData.canvasArray[self.selectedTile[1]][self.selectedTile[0]] = paintImage
 
         if self.parent.parent.toolSelect.selectorCanvas.tool == "erase":
-            print("erase tile")
+            # Remove whatever is on the tile
+            self.delete(mapData.canvasArray[self.selectedTile[1]][self.selectedTile[0]])
+            # and from the data arrays
+            mapData.mapArray[self.selectedTile[1]][self.selectedTile[0]] = ' '
+            mapData.canvasArray[self.selectedTile[1]][self.selectedTile[0]] = ' '
 
+        if self.parent.parent.toolSelect.selectorCanvas.tool == "fill" or "fillErase":
+            # This only draws a highlight of the region selected
+            if self.parent.parent.toolSelect.boxStartPos == []:
+                # Save the initial position of the box
+                self.parent.parent.toolSelect.boxStartPos = [self.selectedTile[0],self.selectedTile[1]]
+            else:
+                try:
+                    # Remove a previously drawn box if it exists
+                    self.delete(self.rectangleDraw)
+                except:
+                    pass
+                # and draw a new one
+                self.rectangleDraw = self.create_rectangle(
+                    self.parent.parent.toolSelect.boxStartPos[0]*tileSize,
+                    self.parent.parent.toolSelect.boxStartPos[1]*tileSize,
+                    self.selectedTileX*tileSize,
+                    self.selectedTileY*tileSize,
+                    dash=(5,5),
+                    outline="black"
+                )
+                # Handling the operation has to be bound to a mouse release in this config
+
+    def setBoxSelect(self, event):
+        # Handle the two different kinds of area selections
+        # Capture the box corner data
+        self.boxStartPos = self.parent.parent.toolSelect.boxStartPos*tileSize
+
+        # Clear the drawn rectable
+        self.delete(self.rectangleDraw)
+
+        # Target cells between the corners
+        # <Motion> will have the end corner highlighted for us as selectedTile
+        for incrementX in range(abs(self.boxStartPos[0] - self.selectedTileX)):
+            print("COLUMN: " + str(incrementX))
+            for incrementY in range(abs(self.boxStartPos[1] - self.selectedTileY)):
+                print("ROW: " + str(incrementY))
+                # If the first corner is on the left
+                if self.boxStartPos[0] < self.selectedTileX:
+                    # And the end corner is lower
+                    if self.boxStartPos[1] < self.selectedTileY:
+                        # Fill left(startX)->right(endX) top(startY)->bottom(endY)
+                        self.fillTile(incrementX, incrementY, self.boxStartPos[0], self.boxStartPos[1])
+                    # And the end corner is higher
+                    if self.boxStartPos[1] > self.selectedTileY:
+                        # Fill left(startX)->right(endX) top(endY)->bottom(startY)
+                        self.fillTile(incrementX, incrementY, self.boxStartPos[0], self.selectedTileY)
+                # If the first corner is on the right
+                if self.boxStartPos[0] > self.selectedTileX:
+                    # And the end corner is lower
+                    if self.boxStartPos[1] < self.selectedTileY:
+                        # Fill left(endX)->right(startX) top(startY)->bottom(endY) 
+                        self.fillTile(incrementX, incrementY, self.selectedTileX, self.boxStartPos[1])
+                    # And the end corner is higher
+                    if self.boxStartPos[1] > self.selectedTileY:
+                        # Fill left(endX)->right(startX) top(endY)->bottom(startY)
+                        self.fillTile(incrementX, incrementY, self.selectedTileX, self.selectedTileY)
+
+            # After filling, delete the rectangle and free up the start square
+            self.delete(self.rectangleDraw)
+            self.parent.parent.toolSelect.boxStartPos = []
+
+    def fillTile(self, incrementX, incrementY, startX, startY):
+        # Ingests: the current iterative tile from the corner to begin at
+        # Paints the tile accordingly
+        print("PAINTING TILE FROM CORNER: (" + str(startX) + "," + str(startY) + ")")
+        print("PAINTING TILE: (" + str(incrementX + startX) + "," + str(incrementY + startY) + ")")
+        # Reference variable to the map data
+        mapData = self.parent.parent.mapData
+        currentImage = self.parent.parent.tileSelect.currentImage
+        currentImagePath = self.parent.parent.tileSelect.currentImagePath
+
+        # Clear out the tile if it already contains something
+        if mapData.canvasArray[incrementX + startX][incrementY + startY] != " ":
+            self.delete(mapData.canvasArray[incrementX + startX][incrementY + startY])
+        mapData.canvasArray[incrementX + startX][incrementY + startY] = ' '
+        mapData.mapArray[incrementX + startX][incrementY + startY] = ' '
+
+        # Draw the new tile if filling
         if self.parent.parent.toolSelect.selectorCanvas.tool == "fill":
-            print("fill region")
+            paintImage = self.create_image((incrementX + startX)*tileSize, (incrementY + startY)*tileSize, image=currentImage, anchor=tk.NW)
+            mapData.mapArray[incrementX + startX][incrementY + startY] = currentImagePath
+            mapData.canvasArray[incrementX + startX][incrementY + startY] = paintImage
 
-        if self.parent.parent.toolSelect.selectorCanvas.tool == "fillErase":
-            print("void region")
-    
+

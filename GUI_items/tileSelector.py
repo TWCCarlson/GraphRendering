@@ -41,6 +41,10 @@ class tileSelector(tk.Frame):
         # Make the widget size static regardless of what it contains
         self.grid_propagate(False)
 
+        # Props made available to the rest of the app
+        self.currentImagePath = ""
+        self.currentImage = ""
+
         # Add the widget to the window
         self.grid(row=0, column=0, padx=baselinePad, pady=baselinePad, sticky="N") # Sticky makes the cell stay north
         
@@ -71,10 +75,8 @@ class selectorCanvas(tk.Canvas):
         imagePaths = []
         # Retrieve current system directory filepath
         curdir = os.path.dirname(__file__)
-        print(curdir)
         # Add the target directory filepath
         tardir = os.path.join(curdir, 'tileSelectorDefaultImages')
-        print(tardir)
         # Iterate over all items found in the directory
         for path in os.listdir(tardir):
             # Verify file-ness
@@ -96,8 +98,8 @@ class selectorCanvas(tk.Canvas):
                 self.nextButtonPosition = (0, self.nextButtonPosition[1] + buttonSize + 2)
 
     def selectTile(self, i):
-        # TODO
-        print("not done")
+        self.parent.currentImagePath = str(self.tileOpts[i].path)
+        self.parent.currentImage = self.tileOpts[i].tile.image
 
 class TileButton(tk.Button):
     def __init__(self, parent, imagePath, buttonPosition):

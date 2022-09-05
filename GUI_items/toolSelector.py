@@ -7,6 +7,8 @@ from .tile import Tile
 # Import filesystem navigation
 import os
 
+# TODO: #2 hover tooltips/labels
+
 # Sizing values, static
 frameHeight = 47
 frameWidth = 179
@@ -32,6 +34,7 @@ class toolSelector(tk.Frame):
 
         # Usage properties
         self.toolOptions = [] # Holds all the tool choices
+        self.boxStartPos = []
 
         # Place the frame in the window
         self.grid(row=1, column=0, padx=baselinePad, pady=baselinePad)
