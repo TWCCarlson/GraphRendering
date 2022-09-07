@@ -50,12 +50,15 @@ class FileCommands(tk.Menu):
         # Grab the entry field values
         NewMapWidth = self.widthEntry.get()
         NewMapHeight = self.heightEntry.get()
-        # self.delete(self.parent.parent.mapData)
-        # for child in self.parent.parent.canvas.winfo_children():
-        #     child.destroy()
+
+        # Clear the canvas
         self.parent.parent.canvas.canvas.delete('all')
+
+        # Update objects
         self.parent.parent.mapData = mapDataArray(self.parent, (int(NewMapWidth), int(NewMapHeight)))
         self.parent.parent.canvas.canvas = designCanvas(self.parent.parent.canvas)
+
+        # Refresh the canvas to show new data
         self.parent.parent.canvas.canvas.update
 
     def OpenMap(self):

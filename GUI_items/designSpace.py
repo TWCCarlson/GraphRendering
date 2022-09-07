@@ -7,7 +7,6 @@ toolboxWidth = 180
 screenUsage = 0.75
 borderWidth = 5
 canvasPad = 32
-canvasSizeTemp = 4000
 tileSize = 32
 
 class designSpace(tk.Frame):
@@ -53,15 +52,15 @@ class designCanvas(tk.Canvas):
         self["bg"] = "#abbcd6"
         self["yscrollcommand"] = self.parent.ybar.set
         self["xscrollcommand"] = self.parent.xbar.set
-        self["scrollregion"] = (0,0,self.canvasWidth,self.canvasHeight) # TODO: #1 make this adjust to grid size
+        self["scrollregion"] = (0,0,self.canvasWidth,self.canvasHeight)
         self.xview_moveto("0.0")
         self.yview_moveto("0.0")
 
         # Create visible divisions on the canvas to delineate tiles
         for i in range(int(self.canvasWidth/tileSize)+1):
-            self.create_line(i* tileSize, 0, i * tileSize, canvasSizeTemp, fill="light gray")
+            self.create_line(i* tileSize, 0, i * tileSize, self.canvasWidth, fill="light gray")
         for i in range(int(self.canvasHeight/tileSize)+1):
-            self.create_line(0, i* tileSize, canvasSizeTemp, i * tileSize, fill="light gray")
+            self.create_line(0, i* tileSize, self.canvasHeight, i * tileSize, fill="light gray")
 
         # Enable hotkey scrolling
         # TODO: enable hotkey scrolling
@@ -82,8 +81,8 @@ class designCanvas(tk.Canvas):
         yScrollDist = self.parent.ybar.get()[0]
         # Convert the click location to a tile location using scrollbar position data
         # Scrollbar fraction * total canvas size + click event view location / tileSize, floored gives tile ID for column/row
-        self.selectedTileX = int((xScrollDist * canvasSizeTemp + event.x)/tileSize)
-        self.selectedTileY = int((yScrollDist * canvasSizeTemp + event.y)/tileSize)
+        self.selectedTileX = int((xScrollDist * self.canvasWidth + event.x)/tileSize)
+        self.selectedTileY = int((yScrollDist * self.canvasHeight + event.y)/tileSize)
         self.selectedTile = (self.selectedTileX, self.selectedTileY)
 
         # Execute click effect
