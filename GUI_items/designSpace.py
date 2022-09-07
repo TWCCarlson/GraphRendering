@@ -87,11 +87,9 @@ class designCanvas(tk.Canvas):
         self.bind("<Button-1>", self.selectTile)    # Single click
         self.bind("<B1-Motion>", self.selectTile)   # Click-drag
         self.bind("<ButtonRelease-1>", self.setBoxSelect)
-        
+
         # Render component
         self.grid(column=0, row=0)
-
-
 
     def selectTile(self, event):
         # Reference to current tool
@@ -120,20 +118,22 @@ class designCanvas(tk.Canvas):
             currentImagePath = self.parent.parent.tileSelect.currentImagePath
 
             # Remove whatever is there already if there is something
-            if mapData.canvasArray[self.selectedTile[1]][self.selectedTile[0]] != " ":
-                self.delete(mapData.canvasArray[self.selectedTile[1]][self.selectedTile[0]])
+            if mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]] != " ":
+                self.delete(mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]])
+                mapData.mapArray[self.selectedTile[0]][self.selectedTile[1]] = ' '
+                mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]] = ' '
             
             # Draw the new tile in its place
             paintImage = self.create_image(self.selectedTile[0]*tileSize, self.selectedTile[1]*tileSize, image=currentImage, anchor=tk.NW)
-            mapData.mapArray[self.selectedTile[1]][self.selectedTile[0]] = currentImagePath
-            mapData.canvasArray[self.selectedTile[1]][self.selectedTile[0]] = paintImage
+            mapData.mapArray[self.selectedTile[0]][self.selectedTile[1]] = currentImagePath
+            mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]] = paintImage
 
         if self.currentTool == "erase":
             # Remove whatever is on the tile
-            self.delete(mapData.canvasArray[self.selectedTile[1]][self.selectedTile[0]])
+            self.delete(mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]])
             # and from the data arrays
-            mapData.mapArray[self.selectedTile[1]][self.selectedTile[0]] = ' '
-            mapData.canvasArray[self.selectedTile[1]][self.selectedTile[0]] = ' '
+            mapData.mapArray[self.selectedTile[0]][self.selectedTile[1]] = ' '
+            mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]] = ' '
 
         if self.currentTool == "fill" or self.currentTool == "fillErase":
             # This only draws a highlight of the region selected
