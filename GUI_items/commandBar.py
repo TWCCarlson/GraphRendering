@@ -61,6 +61,9 @@ class FileCommands(tk.Menu):
         # Refresh the canvas to show new data
         self.parent.parent.canvas.canvas.update
 
+        # Close the new map dialog
+        self.dialogBox.destroy()
+
     def OpenMap(self):
         print("open map")
 
