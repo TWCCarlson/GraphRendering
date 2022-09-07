@@ -10,7 +10,7 @@
 import tkinter as tk
 
 # Import the classdefs from the modules directory
-from GUI_items import designSpace, mapDataArray, tileSelector, toolSelector
+from GUI_items import commandBar, designSpace, mapDataArray, tileSelector, toolSelector
 
 class App(tk.Tk):
     def __init__(self):
@@ -21,6 +21,7 @@ class App(tk.Tk):
         self.tileSelect = tileSelector(self)
         self.toolSelect = toolSelector(self)
         self.canvas = designSpace(self)
+        self.commandBar = commandBar(self)
         self.mainloop() # Blocking call to render the app
 
 app = App()

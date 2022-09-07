@@ -42,21 +42,25 @@ class designCanvas(tk.Canvas):
     def __init__(self, parent):
         tk.Canvas.__init__(self, parent)
         self.parent = parent
+        print(self.parent.parent.mapData.mapWidth)
+        print(self.parent.parent.mapData.mapWidth)
+        self.canvasWidth = self.parent.parent.mapData.mapWidth * tileSize
+        self.canvasHeight = self.parent.parent.mapData.mapHeight * tileSize
 
         # Configure canvas appearance
-        self["width"] = self.parent.width - canvasPad
-        self["height"] = self.parent.height - canvasPad
+        self["width"] = min(self.parent.width - canvasPad, self.canvasWidth)
+        self["height"] = min(self.parent.height - canvasPad, self.canvasWidth)
         self["bg"] = "#abbcd6"
         self["yscrollcommand"] = self.parent.ybar.set
         self["xscrollcommand"] = self.parent.xbar.set
-        self["scrollregion"] = (0,0,canvasSizeTemp,canvasSizeTemp) # TODO: #1 make this adjust to grid size
+        self["scrollregion"] = (0,0,self.canvasWidth,self.canvasHeight) # TODO: #1 make this adjust to grid size
         self.xview_moveto("0.0")
         self.yview_moveto("0.0")
 
         # Create visible divisions on the canvas to delineate tiles
-        for i in range(int(canvasSizeTemp/tileSize)+1):
+        for i in range(int(self.canvasWidth/tileSize)+1):
             self.create_line(i* tileSize, 0, i * tileSize, canvasSizeTemp, fill="light gray")
-        for i in range(int(canvasSizeTemp/tileSize)+1):
+        for i in range(int(self.canvasHeight/tileSize)+1):
             self.create_line(0, i* tileSize, canvasSizeTemp, i * tileSize, fill="light gray")
 
         # Enable hotkey scrolling
