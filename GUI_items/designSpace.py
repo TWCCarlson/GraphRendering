@@ -71,6 +71,9 @@ class designCanvas(tk.Canvas):
         self.grid(column=0, row=0)
 
     def selectTile(self, event):
+        # Reference to current tool
+        self.currentTool = self.parent.parent.toolSelect.selectorCanvas.tool
+
         xScrollDist = self.parent.xbar.get()[0]
         yScrollDist = self.parent.ybar.get()[0]
         # Convert the click location to a tile location using scrollbar position data
@@ -85,8 +88,10 @@ class designCanvas(tk.Canvas):
     def setTile(self):
         # Reference variable to the map data
         mapData = self.parent.parent.mapData
+        # Reference to current tool
+        self.currentTool = self.parent.parent.toolSelect.selectorCanvas.tool
 
-        if self.parent.parent.toolSelect.selectorCanvas.tool == "paint":
+        if self.currentTool == "paint":
             # Capture information about what's being painted
             currentImage = self.parent.parent.tileSelect.currentImage
             currentImagePath = self.parent.parent.tileSelect.currentImagePath
@@ -100,14 +105,14 @@ class designCanvas(tk.Canvas):
             mapData.mapArray[self.selectedTile[1]][self.selectedTile[0]] = currentImagePath
             mapData.canvasArray[self.selectedTile[1]][self.selectedTile[0]] = paintImage
 
-        if self.parent.parent.toolSelect.selectorCanvas.tool == "erase":
+        if self.currentTool == "erase":
             # Remove whatever is on the tile
             self.delete(mapData.canvasArray[self.selectedTile[1]][self.selectedTile[0]])
             # and from the data arrays
             mapData.mapArray[self.selectedTile[1]][self.selectedTile[0]] = ' '
             mapData.canvasArray[self.selectedTile[1]][self.selectedTile[0]] = ' '
 
-        if self.parent.parent.toolSelect.selectorCanvas.tool == "fill" or "fillErase":
+        if self.currentTool == "fill" or self.currentTool == "fillErase":
             # This only draws a highlight of the region selected
             if self.parent.parent.toolSelect.boxStartPos == []:
                 # Save the initial position of the box
@@ -130,49 +135,50 @@ class designCanvas(tk.Canvas):
                 # Handling the operation has to be bound to a mouse release in this config
 
     def setBoxSelect(self, event):
-        # Handle the two different kinds of area selections
-        # Capture the box corner data
-        self.boxStartPos = self.parent.parent.toolSelect.boxStartPos*tileSize
+        if self.currentTool == "fill" or self.currentTool == "fillErase":
+            # Handle the two different kinds of area selections
+            # Capture the box corner data
+            self.boxStartPos = self.parent.parent.toolSelect.boxStartPos*tileSize
 
-        # Clear the drawn rectable
-        self.delete(self.rectangleDraw)
-
-        # Target cells between the corners
-        # <Motion> will have the end corner highlighted for us as selectedTile
-        for incrementX in range(abs(self.boxStartPos[0] - self.selectedTileX)):
-            print("COLUMN: " + str(incrementX))
-            for incrementY in range(abs(self.boxStartPos[1] - self.selectedTileY)):
-                print("ROW: " + str(incrementY))
-                # If the first corner is on the left
-                if self.boxStartPos[0] < self.selectedTileX:
-                    # And the end corner is lower
-                    if self.boxStartPos[1] < self.selectedTileY:
-                        # Fill left(startX)->right(endX) top(startY)->bottom(endY)
-                        self.fillTile(incrementX, incrementY, self.boxStartPos[0], self.boxStartPos[1])
-                    # And the end corner is higher
-                    if self.boxStartPos[1] > self.selectedTileY:
-                        # Fill left(startX)->right(endX) top(endY)->bottom(startY)
-                        self.fillTile(incrementX, incrementY, self.boxStartPos[0], self.selectedTileY)
-                # If the first corner is on the right
-                if self.boxStartPos[0] > self.selectedTileX:
-                    # And the end corner is lower
-                    if self.boxStartPos[1] < self.selectedTileY:
-                        # Fill left(endX)->right(startX) top(startY)->bottom(endY) 
-                        self.fillTile(incrementX, incrementY, self.selectedTileX, self.boxStartPos[1])
-                    # And the end corner is higher
-                    if self.boxStartPos[1] > self.selectedTileY:
-                        # Fill left(endX)->right(startX) top(endY)->bottom(startY)
-                        self.fillTile(incrementX, incrementY, self.selectedTileX, self.selectedTileY)
-
-            # After filling, delete the rectangle and free up the start square
+            # Clear the drawn rectable
             self.delete(self.rectangleDraw)
-            self.parent.parent.toolSelect.boxStartPos = []
+
+            # Target cells between the corners
+            # <Motion> will have the end corner highlighted for us as selectedTile
+            for incrementX in range(abs(self.boxStartPos[0] - self.selectedTileX)):
+                # print("COLUMN: " + str(incrementX))
+                for incrementY in range(abs(self.boxStartPos[1] - self.selectedTileY)):
+                    # print("ROW: " + str(incrementY))
+                    # If the first corner is on the left
+                    if self.boxStartPos[0] < self.selectedTileX:
+                        # And the end corner is lower
+                        if self.boxStartPos[1] < self.selectedTileY:
+                            # Fill left(startX)->right(endX) top(startY)->bottom(endY)
+                            self.fillTile(incrementX, incrementY, self.boxStartPos[0], self.boxStartPos[1])
+                        # And the end corner is higher
+                        if self.boxStartPos[1] > self.selectedTileY:
+                            # Fill left(startX)->right(endX) top(endY)->bottom(startY)
+                            self.fillTile(incrementX, incrementY, self.boxStartPos[0], self.selectedTileY)
+                    # If the first corner is on the right
+                    if self.boxStartPos[0] > self.selectedTileX:
+                        # And the end corner is lower
+                        if self.boxStartPos[1] < self.selectedTileY:
+                            # Fill left(endX)->right(startX) top(startY)->bottom(endY) 
+                            self.fillTile(incrementX, incrementY, self.selectedTileX, self.boxStartPos[1])
+                        # And the end corner is higher
+                        if self.boxStartPos[1] > self.selectedTileY:
+                            # Fill left(endX)->right(startX) top(endY)->bottom(startY)
+                            self.fillTile(incrementX, incrementY, self.selectedTileX, self.selectedTileY)
+
+                # After filling, delete the rectangle and free up the start square
+                self.delete(self.rectangleDraw)
+                self.parent.parent.toolSelect.boxStartPos = []
 
     def fillTile(self, incrementX, incrementY, startX, startY):
         # Ingests: the current iterative tile from the corner to begin at
         # Paints the tile accordingly
-        print("PAINTING TILE FROM CORNER: (" + str(startX) + "," + str(startY) + ")")
-        print("PAINTING TILE: (" + str(incrementX + startX) + "," + str(incrementY + startY) + ")")
+        # print("PAINTING TILE FROM CORNER: (" + str(startX) + "," + str(startY) + ")")
+        # print("PAINTING TILE: (" + str(incrementX + startX) + "," + str(incrementY + startY) + ")")
         # Reference variable to the map data
         mapData = self.parent.parent.mapData
         currentImage = self.parent.parent.tileSelect.currentImage
@@ -185,7 +191,7 @@ class designCanvas(tk.Canvas):
         mapData.mapArray[incrementX + startX][incrementY + startY] = ' '
 
         # Draw the new tile if filling
-        if self.parent.parent.toolSelect.selectorCanvas.tool == "fill":
+        if self.currentTool == "fill":
             paintImage = self.create_image((incrementX + startX)*tileSize, (incrementY + startY)*tileSize, image=currentImage, anchor=tk.NW)
             mapData.mapArray[incrementX + startX][incrementY + startY] = currentImagePath
             mapData.canvasArray[incrementX + startX][incrementY + startY] = paintImage
