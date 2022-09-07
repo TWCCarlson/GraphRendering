@@ -87,9 +87,7 @@ class designCanvas(tk.Canvas):
         self.bind("<Button-1>", self.selectTile)    # Single click
         self.bind("<B1-Motion>", self.selectTile)   # Click-drag
         self.bind("<ButtonRelease-1>", self.setBoxSelect)
-
-        # Scrolling
-
+        
         # Render component
         self.grid(column=0, row=0)
 
