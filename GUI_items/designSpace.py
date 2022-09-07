@@ -37,6 +37,24 @@ class designSpace(tk.Frame):
         self.grid_propagate(False)
         self.grid(row=0, column=1, pady=borderWidth, padx=borderWidth, rowspan=2)
 
+        # Scrolling
+        self.bind('<Enter>', self.bindToMousewheel)
+        self.bind('<Leave>', self.unbindMousewheel)
+
+    def bindToMousewheel(self, event):
+        self.bind_all("<MouseWheel>", self.mousewheelAction)
+        self.bind_all("<Shift-MouseWheel>", self.shiftMousewheelAction)
+
+    def unbindMousewheel(self, event):
+        self.unbind_all("<MouseWheel>")
+        self.unbind_all("<Shift-MouseWheel>")
+
+    def mousewheelAction(self, event):
+        self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+
+    def shiftMousewheelAction(self, event):
+        self.canvas.xview_scroll(int(-1*(event.delta/120)), "units")
+
 class designCanvas(tk.Canvas):
     def __init__(self, parent):
         tk.Canvas.__init__(self, parent)
@@ -70,8 +88,12 @@ class designCanvas(tk.Canvas):
         self.bind("<B1-Motion>", self.selectTile)   # Click-drag
         self.bind("<ButtonRelease-1>", self.setBoxSelect)
 
+        # Scrolling
+
         # Render component
         self.grid(column=0, row=0)
+
+
 
     def selectTile(self, event):
         # Reference to current tool
