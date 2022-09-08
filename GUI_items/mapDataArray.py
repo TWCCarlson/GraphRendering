@@ -27,3 +27,12 @@ class mapDataArray:
             for j in range(self.mapWidth):
                 row.append(" ") # Empty items are empty - distinct from zeros
             self.canvasArray.append(row)
+
+    def Save(self, path, saveType):
+        print(self.mapArray)
+        print(self.canvasArray)
+
+        # Create a dictionary of all the images used
+        # ^ Static, in this use case
+        # Translate the path array into graphmap = (node existence, (edge directions), node type)
+        # Save as JSON (imagepaths, graphmap)

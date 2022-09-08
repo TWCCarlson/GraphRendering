@@ -16,7 +16,6 @@ class App(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self) # Initialize main window
         self.title("FloorDesign - GUI")
-        # TODO: #4 prompt user for map size
         self.mapData = mapDataArray(self, (50,50))
         self.tileSelect = tileSelector(self)
         self.toolSelect = toolSelector(self)

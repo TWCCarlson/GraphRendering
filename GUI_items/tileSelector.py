@@ -8,15 +8,15 @@ import os
 from .tile import Tile
 
 # Sizing values, static throughout code
-frameHeight = 150
-frameWidth = 180
+frameHeight = 768
+frameWidth = 150
 frameBorderWidth = 5
 frameRelief = RIDGE
 baselinePad = 10
 scrollbarWidth = 20
-canvasWidth = 142
+canvasWidth = 138
 canvasHeight = frameHeight - 1.5*baselinePad
-canvasMaxLen = 1000
+canvasMaxLen = 700
 buttonRelief = FLAT
 buttonSize = 32
 
@@ -28,15 +28,15 @@ class tileSelector(tk.Frame):
         self.parent = parent # The host window is the parent of this widget
 
         # Use a scrollbar in case there are many icons to choose from
-        self.ybar = tk.Scrollbar(self)
+        # self.ybar = tk.Scrollbar(self)
 
         # Make a canvas that holds the different options
         self.selectorCanvas = selectorCanvas(self)
 
-        self.ybar["width"] = scrollbarWidth
-        self.ybar["orient"] = "vertical"
-        self.ybar["command"] = self.selectorCanvas.yview
-        self.ybar.grid(column=1, row=0, sticky="NS") # It should exist as the 2nd item in the row, stuck to the top and bottom of the parent frame
+        # self.ybar["width"] = scrollbarWidth
+        # self.ybar["orient"] = "vertical"
+        # self.ybar["command"] = self.selectorCanvas.yview
+        # self.ybar.grid(column=1, row=0, sticky="NS") # It should exist as the 2nd item in the row, stuck to the top and bottom of the parent frame
 
         # Make the widget size static regardless of what it contains
         self.grid_propagate(False)
@@ -55,8 +55,8 @@ class selectorCanvas(tk.Canvas):
         self.parent = parent
         self["width"] = canvasWidth     # Control the display section width
         self["height"] = canvasHeight    # Control the display section height
-        self["scrollregion"] = (0,0,0,canvasMaxLen)
-        self["yscrollcommand"] = self.parent.ybar.set
+        # self["scrollregion"] = (0,0,0,canvasMaxLen)
+        # self["yscrollcommand"] = self.parent.ybar.set
         self.grid(column=0, row=0)
 
         # Create a container for loaded tiles
@@ -94,8 +94,11 @@ class selectorCanvas(tk.Canvas):
             self.nextButtonPosition = (self.nextButtonPosition[0] + self.tileSize + 2,
             self.nextButtonPosition[1])
             # If the next button would run off the linewidth, move down a row
-            if self.nextButtonPosition[0] > canvasWidth - buttonSize:
+            if self.nextButtonPosition[0] > canvasWidth - buttonSize or len(self.tileOpts) % 15 == 0:
                 self.nextButtonPosition = (0, self.nextButtonPosition[1] + buttonSize + 2)
+
+            if len(self.tileOpts) % 15 == 0:
+                self.nextButtonPosition = (0, self.nextButtonPosition[1] + 8)
 
     def selectTile(self, i):
         self.parent.currentImagePath = str(self.tileOpts[i].path)

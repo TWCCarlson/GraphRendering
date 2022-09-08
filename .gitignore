@@ -154,3 +154,4 @@ cython_debug/
 # Extra files
 Tile-Basic-main
 Tile-Basic-main.zip
+.templates

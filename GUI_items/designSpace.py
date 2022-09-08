@@ -59,8 +59,6 @@ class designCanvas(tk.Canvas):
     def __init__(self, parent):
         tk.Canvas.__init__(self, parent)
         self.parent = parent
-        print(self.parent.parent.mapData.mapWidth)
-        print(self.parent.parent.mapData.mapWidth)
         self.canvasWidth = self.parent.parent.mapData.mapWidth * tileSize
         self.canvasHeight = self.parent.parent.mapData.mapHeight * tileSize
 
@@ -89,7 +87,7 @@ class designCanvas(tk.Canvas):
         self.bind("<ButtonRelease-1>", self.setBoxSelect)
 
         # Render component
-        self.grid(column=0, row=0)
+        self.grid(column=0, row=0, sticky=tk.NW)
 
     def selectTile(self, event):
         # Reference to current tool

@@ -2,6 +2,7 @@
 import tkinter as tk
 # For new map array generation
 from GUI_items import mapDataArray, designCanvas
+from tkinter import filedialog
 
 class commandBar(tk.Menu):
     def __init__(self, parent):
@@ -68,7 +69,28 @@ class FileCommands(tk.Menu):
         print("open map")
 
     def SaveMap(self):
+        saveType = tk.IntVar()
+
+        # Create dialog box
+        self.dialogBox = tk.Toplevel(self.parent.parent)
+        self.dialogBox.title("Choose save method")
+
+        # Option buttons
+        button1 = tk.Radiobutton(self.dialogBox, text="Save only the region containing tiles", variable=saveType, value=1)
+        button2 = tk.Radiobutton(self.dialogBox, text="Save entire map including empty edges", variable=saveType, value=2)
+        button1.pack(anchor = tk.W)
+        button2.pack(anchor = tk.W)
+        button1.select()
+
+        # Confirm button
+        confirm = tk.Button(self.dialogBox, text="Ok", width=5, command=lambda i=saveType: self.Save(i))
+        confirm.pack()
         print("save map")
+
+    def Save(self, saveType):
+        FTypes = [("Comma Separated", ".csv")]
+        path = tk.filedialog.asksaveasfile(title="Save Map", filetypes = FTypes, defaultextension = FTypes)
+        self.parent.parent.mapData.Save(path, saveType)
 
     def QuitOut(self):
         print("quit")
