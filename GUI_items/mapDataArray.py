@@ -4,6 +4,10 @@
 # etc
 # Will have export/input methods
 import tkinter as tk
+# Import regex matching for use in map export
+import re
+# Import json structuring
+import json
 
 class mapDataArray:
     def __init__(self, parent, dims):
@@ -36,3 +40,35 @@ class mapDataArray:
         # ^ Static, in this use case
         # Translate the path array into graphmap = (node existence, (edge directions), node type)
         # Save as JSON (imagepaths, graphmap)
+        # Pull the imagepath for each tile
+        nodeList = []
+        for colIndex in range(len(self.mapArray)):
+            for rowIndex in range(len(self.mapArray[0])):
+                filePath = self.mapArray[colIndex][rowIndex]
+                if filePath != ' ':
+                    print(filePath)
+                    fileID = re.search(r"(?<=\\tileSelectorDefaultImages\\)(.*?)(?=.png)", filePath).group()
+                    print(fileID)
+                    tileType = re.search(r"(edge)|(charge)|(deposit)|(pickup)|(rest)|(void)", fileID).group()
+                    print(tileType)
+                    # Regexically find the edges that exist on the tile
+                    tileEdgeDirections = re.findall(r"(N|W|S|E)", fileID)
+                    # Translate the list to a dictionary
+                    tileEdgeDict = {
+                        "N": tileEdgeDirections.count("N"),
+                        "W": tileEdgeDirections.count("W"),
+                        "S": tileEdgeDirections.count("S"),
+                        "E": tileEdgeDirections.count("E")
+                    }
+                    print(tileEdgeDirections)
+                    # Save all the information about the node into a structure
+                    nodeData = {
+                        "nodePosition": (rowIndex, colIndex),
+                        "nodeStyle": filePath,
+                        "nodeType": tileType,
+                        "nodeEdges": tileEdgeDict
+                    }
+                    nodeList.append(nodeData)
+                    print("=============")
+        mapData = json.dumps(nodeList, indent=4)
+        print(mapData)
