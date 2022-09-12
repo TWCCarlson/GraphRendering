@@ -44,13 +44,13 @@ class mapDataArray:
         nodeList = []
         for colIndex in range(len(self.mapArray)):
             for rowIndex in range(len(self.mapArray[0])):
+                # The map array contains the filepath for each tile's image
                 filePath = self.mapArray[colIndex][rowIndex]
                 if filePath != ' ':
-                    print(filePath)
+                    # Regexically grab the image name
                     fileID = re.search(r"(?<=\\tileSelectorDefaultImages\\)(.*?)(?=.png)", filePath).group()
-                    print(fileID)
+                    # From that, regexically grab the tile type
                     tileType = re.search(r"(edge)|(charge)|(deposit)|(pickup)|(rest)|(void)", fileID).group()
-                    print(tileType)
                     # Regexically find the edges that exist on the tile
                     tileEdgeDirections = re.findall(r"(N|W|S|E)", fileID)
                     # Translate the list to a dictionary
@@ -63,12 +63,14 @@ class mapDataArray:
                     print(tileEdgeDirections)
                     # Save all the information about the node into a structure
                     nodeData = {
-                        "nodePosition": (rowIndex, colIndex),
+                        "nodePosition": {
+                            "X": rowIndex,
+                            "Y": colIndex
+                        },
                         "nodeStyle": filePath,
                         "nodeType": tileType,
                         "nodeEdges": tileEdgeDict
                     }
                     nodeList.append(nodeData)
-                    print("=============")
         mapData = json.dumps(nodeList, indent=4)
         print(mapData)
