@@ -8,7 +8,7 @@
 
 # Import tkinter itself
 import tkinter as tk
-
+    
 # Import the classdefs from the modules directory
 from GUI_items import commandBar, designSpace, mapDataArray, tileSelector, toolSelector
 

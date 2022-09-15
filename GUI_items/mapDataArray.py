@@ -8,6 +8,10 @@ import tkinter as tk
 import re
 # Import json structuring
 import json
+# Import the canvas class for ingesting a new map
+from GUI_items.designSpace import designCanvas
+
+tileSize = 32
 
 class mapDataArray:
     def __init__(self, parent, dims):
@@ -16,21 +20,28 @@ class mapDataArray:
         self.mapWidth = dims[0]
         self.mapHeight = dims[1]
 
+        self.generateNewMap(self.mapHeight, self.mapWidth)
+
+    def generateNewMap(self, mapHeight, mapWidth):
         # Create an integer array 
         self.mapArray = []
-        for i in range(self.mapHeight):
+        for i in range(mapHeight):
             row = []
-            for j in range(self.mapWidth):
+            for j in range(mapWidth):
                 row.append(" ") # Empty items are empty - distinct from zeros
             self.mapArray.append(row)
         
-        # Create a matching array with imagepaths for displaying in app
+        # Create a matching array with image index for tool options
         self.canvasArray = []
-        for i in range(self.mapHeight):
+        for i in range(mapHeight):
             row = []
-            for j in range(self.mapWidth):
+            for j in range(mapWidth):
                 row.append(" ") # Empty items are empty - distinct from zeros
             self.canvasArray.append(row)
+
+        # Update the maximum dims for reference elsewhere
+        self.mapHeight = mapHeight
+        self.mapWidth = mapWidth
 
     def Save(self, path, saveType):
         print(self.mapArray)
@@ -42,6 +53,16 @@ class mapDataArray:
         # Save as JSON (imagepaths, graphmap)
         # Pull the imagepath for each tile
         nodeList = []
+        # Indicate maximum column, row dimensions in the json
+        maxCols = len(self.mapArray[0])
+        maxRows = len(self.mapArray[1])
+        mapDimsDict = {
+            "mapDimensions": {
+                "Xdim": maxCols,
+                "Ydim": maxRows,
+            }
+        }
+        nodeList.append(mapDimsDict)
         for colIndex in range(len(self.mapArray)):
             for rowIndex in range(len(self.mapArray[0])):
                 # The map array contains the filepath for each tile's image
@@ -60,17 +81,72 @@ class mapDataArray:
                         "S": tileEdgeDirections.count("S"),
                         "E": tileEdgeDirections.count("E")
                     }
-                    print(tileEdgeDirections)
                     # Save all the information about the node into a structure
                     nodeData = {
                         "nodePosition": {
-                            "X": rowIndex,
-                            "Y": colIndex
+                            "X": colIndex,
+                            "Y": rowIndex
                         },
-                        "nodeStyle": filePath,
+                        "nodeStylePath": filePath,
+                        "nodeStyleID": self.canvasArray[colIndex][rowIndex],
                         "nodeType": tileType,
                         "nodeEdges": tileEdgeDict
                     }
                     nodeList.append(nodeData)
-        mapData = json.dumps(nodeList, indent=4)
-        print(mapData)
+        tileData = json.dumps(nodeList, indent=4)
+
+        with open(path, "w") as fileOut:
+            fileOut.write(tileData)
+        # print(mapData)
+
+    def Load(self, path):
+        # Populate the mapArray and canvasArray based on data from json
+        # Ingest the file object into a json object
+
+        # Reference to the canvas object
+        tileCanvas = self.parent.canvas.canvas
+        # Reference to the tileSelector object
+        tileSelector = self.parent.tileSelect
+        # Reference to the toolSelector object
+        toolSelector = self.parent.toolSelect
+
+        # Clear the current map
+        tileCanvas.delete('all')
+
+        # Load the new map
+        mapData = json.load(path)
+        for tile in mapData:
+            print(tile)
+            if "mapDimensions" in tile:
+                # Extract map dimensions
+                NewMapWidth = tile["mapDimensions"]["Xdim"]
+                NewMapHeight = tile["mapDimensions"]["Ydim"]
+                
+                # Rebuild the arrays to the needed sizes
+                self.generateNewMap(NewMapHeight, NewMapWidth)
+
+                # Redraw gridlines
+                tileCanvas.drawGridlines()
+                # Refresh the canvas to show new data
+                tileCanvas.update
+
+                print("Cleared map.")
+            else:
+                # Populate the map with tiles
+                # Extract the tile position and image path
+                tilePosition = tile["nodePosition"]
+                tileID = tile["nodeStyleID"]
+                
+                # Set the tileSelector to match the desired tile appearance
+                tileSelector.selectorCanvas.selectTile(tileID)
+
+                # Set the current tool to "Paint" to use already-written methods
+                toolSelector.selectorCanvas.paint()
+
+                # Target the tile
+                tileCanvas.selectedTile = (tilePosition["X"], tilePosition["Y"])
+
+                # Draw the tile
+                tileCanvas.setTile()
+            # print(tile.nodePosition)
+        # print(json.dumps(mapData, indent=4))

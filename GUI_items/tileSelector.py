@@ -44,6 +44,7 @@ class tileSelector(tk.Frame):
         # Props made available to the rest of the app
         self.currentImagePath = ""
         self.currentImage = ""
+        self.cureentImageIndex = ""
 
         # Add the widget to the window
         self.grid(row=0, column=0, padx=baselinePad, pady=baselinePad, sticky="N") # Sticky makes the cell stay north
@@ -103,6 +104,7 @@ class selectorCanvas(tk.Canvas):
     def selectTile(self, i):
         self.parent.currentImagePath = str(self.tileOpts[i].path)
         self.parent.currentImage = self.tileOpts[i].tile.image
+        self.parent.currentImageIndex = i
 
 class TileButton(tk.Button):
     def __init__(self, parent, imagePath, buttonPosition):

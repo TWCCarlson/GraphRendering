@@ -63,20 +63,10 @@ class designCanvas(tk.Canvas):
         self.canvasHeight = self.parent.parent.mapData.mapHeight * tileSize
 
         # Configure canvas appearance
-        self["width"] = min(self.parent.width - canvasPad, self.canvasWidth)
-        self["height"] = min(self.parent.height - canvasPad, self.canvasWidth)
-        self["bg"] = "#abbcd6"
-        self["yscrollcommand"] = self.parent.ybar.set
-        self["xscrollcommand"] = self.parent.xbar.set
-        self["scrollregion"] = (0,0,self.canvasWidth,self.canvasHeight)
-        self.xview_moveto("0.0")
-        self.yview_moveto("0.0")
+        self.redrawGridlines()
 
         # Create visible divisions on the canvas to delineate tiles
-        for i in range(int(self.canvasWidth/tileSize)+1):
-            self.create_line(i* tileSize, 0, i * tileSize, self.canvasWidth, fill="light gray")
-        for i in range(int(self.canvasHeight/tileSize)+1):
-            self.create_line(0, i* tileSize, self.canvasHeight, i * tileSize, fill="light gray")
+        self.drawGridlines()
 
         # Enable hotkey scrolling
         # TODO: enable hotkey scrolling
@@ -88,6 +78,32 @@ class designCanvas(tk.Canvas):
 
         # Render component
         self.grid(column=0, row=0, sticky=tk.NW)
+
+    def redrawGridlines(self):
+        # Update the canvas width in case of redraws from new/load
+        self.canvasWidth = self.parent.parent.mapData.mapWidth * tileSize
+        self.canvasHeight = self.parent.parent.mapData.mapHeight * tileSize
+
+        self["width"] = min(self.parent.width - canvasPad, self.canvasWidth)
+        self["height"] = min(self.parent.height - canvasPad, self.canvasWidth)
+        self["bg"] = "#abbcd6"
+        self["yscrollcommand"] = self.parent.ybar.set
+        self["xscrollcommand"] = self.parent.xbar.set
+        self["scrollregion"] = (0,0,self.canvasWidth,self.canvasHeight)
+        self.xview_moveto("0.0")
+        self.yview_moveto("0.0")
+
+    def drawGridlines(self):
+        # Update the canvas width in case of redraws from new/load
+        print(self.parent.parent.mapData.mapWidth)
+        self.canvasWidth = self.parent.parent.mapData.mapWidth * tileSize
+        self.canvasHeight = self.parent.parent.mapData.mapHeight * tileSize
+
+        # Draw lines
+        for i in range(int(self.canvasWidth/tileSize)+1):
+            self.create_line(i* tileSize, 0, i * tileSize, self.canvasWidth, fill="light gray")
+        for i in range(int(self.canvasHeight/tileSize)+1):
+            self.create_line(0, i* tileSize, self.canvasHeight, i * tileSize, fill="light gray")
 
     def selectTile(self, event):
         # Reference to current tool
@@ -114,6 +130,7 @@ class designCanvas(tk.Canvas):
             # Capture information about what's being painted
             currentImage = self.parent.parent.tileSelect.currentImage
             currentImagePath = self.parent.parent.tileSelect.currentImagePath
+            currentImageIndex = self.parent.parent.tileSelect.currentImageIndex
 
             # Remove whatever is there already if there is something
             if mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]] != " ":
@@ -124,7 +141,7 @@ class designCanvas(tk.Canvas):
             # Draw the new tile in its place
             paintImage = self.create_image(self.selectedTile[0]*tileSize, self.selectedTile[1]*tileSize, image=currentImage, anchor=tk.NW)
             mapData.mapArray[self.selectedTile[0]][self.selectedTile[1]] = currentImagePath
-            mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]] = paintImage
+            mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]] = currentImageIndex
 
         if self.currentTool == "erase":
             # Remove whatever is on the tile

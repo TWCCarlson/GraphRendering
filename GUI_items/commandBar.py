@@ -56,16 +56,19 @@ class FileCommands(tk.Menu):
         self.parent.parent.canvas.canvas.delete('all')
 
         # Update objects
-        self.parent.parent.mapData = mapDataArray(self.parent, (int(NewMapWidth), int(NewMapHeight)))
-        self.parent.parent.canvas.canvas = designCanvas(self.parent.parent.canvas)
+        self.parent.parent.mapData.generateNewMap(int(NewMapHeight), int(NewMapWidth))
 
         # Refresh the canvas to show new data
-        self.parent.parent.canvas.canvas.update
+        self.parent.parent.canvas.canvas.drawGridlines()
 
         # Close the new map dialog
         self.dialogBox.destroy()
 
     def OpenMap(self):
+        # Open a map from a json .txt file
+        path = tk.filedialog.askopenfile(title = "Open Map", filetypes = [("Text", ".txt")])
+        if path != None:
+            self.parent.parent.mapData.Load(path)
         print("open map")
 
     def SaveMap(self):
@@ -88,8 +91,9 @@ class FileCommands(tk.Menu):
         print("save map")
 
     def Save(self, saveType):
-        FTypes = [("Comma Separated", ".csv")]
-        path = tk.filedialog.asksaveasfile(title="Save Map", filetypes = FTypes, defaultextension = FTypes)
+        FTypes = [("JSON Text File", ".txt")]
+        # Use asksaveasfilename to return the file name only
+        path = tk.filedialog.asksaveasfilename(title="Save Map", filetypes = FTypes, defaultextension = FTypes)
         self.parent.parent.mapData.Save(path, saveType)
 
     def QuitOut(self):
