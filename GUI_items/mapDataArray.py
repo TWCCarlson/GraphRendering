@@ -31,13 +31,21 @@ class mapDataArray:
                 row.append(" ") # Empty items are empty - distinct from zeros
             self.mapArray.append(row)
         
-        # Create a matching array with image index for tool options
+        # Create a matching array to hold tkinter images for tool options
         self.canvasArray = []
         for i in range(mapHeight):
             row = []
             for j in range(mapWidth):
                 row.append(" ") # Empty items are empty - distinct from zeros
             self.canvasArray.append(row)
+
+        # Create a matching array with image indexes for tool options
+        self.imageIndexArray = []
+        for i in range(mapHeight):
+            row = []
+            for j in range(mapWidth):
+                row.append(" ")
+            self.imageIndexArray.append(row)
 
         # Update the maximum dims for reference elsewhere
         self.mapHeight = mapHeight
@@ -88,7 +96,7 @@ class mapDataArray:
                             "Y": rowIndex
                         },
                         "nodeStylePath": filePath,
-                        "nodeStyleID": self.canvasArray[colIndex][rowIndex],
+                        "nodeStyleID": self.imageIndexArray[colIndex][rowIndex],
                         "nodeType": tileType,
                         "nodeEdges": tileEdgeDict
                     }

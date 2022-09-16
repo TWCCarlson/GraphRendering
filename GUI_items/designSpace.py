@@ -137,11 +137,13 @@ class designCanvas(tk.Canvas):
                 self.delete(mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]])
                 mapData.mapArray[self.selectedTile[0]][self.selectedTile[1]] = ' '
                 mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]] = ' '
+                mapData.imageIndexArray[self.selectedTile[0]][self.selectedTile[1]] = ' '
             
             # Draw the new tile in its place
             paintImage = self.create_image(self.selectedTile[0]*tileSize, self.selectedTile[1]*tileSize, image=currentImage, anchor=tk.NW)
             mapData.mapArray[self.selectedTile[0]][self.selectedTile[1]] = currentImagePath
-            mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]] = currentImageIndex
+            mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]] = paintImage
+            mapData.imageIndexArray[self.selectedTile[0]][self.selectedTile[1]] = currentImageIndex
 
         if self.currentTool == "erase":
             # Remove whatever is on the tile
@@ -149,6 +151,8 @@ class designCanvas(tk.Canvas):
             # and from the data arrays
             mapData.mapArray[self.selectedTile[0]][self.selectedTile[1]] = ' '
             mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]] = ' '
+            mapData.imageIndexArray[self.selectedTile[0]][self.selectedTile[1]] = ' '
+            self.update()
 
         if self.currentTool == "fill" or self.currentTool == "fillErase":
             # This only draws a highlight of the region selected
@@ -178,7 +182,7 @@ class designCanvas(tk.Canvas):
             # Capture the box corner data
             self.boxStartPos = self.parent.parent.toolSelect.boxStartPos*tileSize
 
-            # Clear the drawn rectable
+            # Clear the drawn rectangle
             self.delete(self.rectangleDraw)
 
             # Target cells between the corners
@@ -221,17 +225,20 @@ class designCanvas(tk.Canvas):
         mapData = self.parent.parent.mapData
         currentImage = self.parent.parent.tileSelect.currentImage
         currentImagePath = self.parent.parent.tileSelect.currentImagePath
+        currentImageIndex = self.parent.parent.tileSelect.currentImageIndex
 
         # Clear out the tile if it already contains something
         if mapData.canvasArray[incrementX + startX][incrementY + startY] != " ":
             self.delete(mapData.canvasArray[incrementX + startX][incrementY + startY])
         mapData.canvasArray[incrementX + startX][incrementY + startY] = ' '
         mapData.mapArray[incrementX + startX][incrementY + startY] = ' '
+        mapData.imageIndexArray[self.selectedTile[0]][self.selectedTile[1]] = ' '
 
         # Draw the new tile if filling
         if self.currentTool == "fill":
             paintImage = self.create_image((incrementX + startX)*tileSize, (incrementY + startY)*tileSize, image=currentImage, anchor=tk.NW)
             mapData.mapArray[incrementX + startX][incrementY + startY] = currentImagePath
             mapData.canvasArray[incrementX + startX][incrementY + startY] = paintImage
+            mapData.imageIndexArray[self.selectedTile[0]][self.selectedTile[1]] = currentImageIndex
 
 
