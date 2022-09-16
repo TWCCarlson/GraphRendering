@@ -176,6 +176,10 @@ class designCanvas(tk.Canvas):
                 )
                 # Handling the operation has to be bound to a mouse release in this config
 
+        # Update saved state
+        self.parent.parent.saved = False
+        
+
     def setBoxSelect(self, event):
         if self.currentTool == "fill" or self.currentTool == "fillErase":
             # Handle the two different kinds of area selections
@@ -215,6 +219,9 @@ class designCanvas(tk.Canvas):
                 # After filling, delete the rectangle and free up the start square
                 self.delete(self.rectangleDraw)
                 self.parent.parent.toolSelect.boxStartPos = []
+
+        # Update saved state
+        self.parent.parent.saved = False
 
     def fillTile(self, incrementX, incrementY, startX, startY):
         # Ingests: the current iterative tile from the corner to begin at

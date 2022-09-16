@@ -1,5 +1,5 @@
 # Visual designer for creating floormaps
-# PURPOSE:
+# PURPOSE:  
 # Accepts user inputs (clicks)
 # constructs a graph
 # exports an adjacency list
@@ -16,6 +16,7 @@ class App(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self) # Initialize main window
         self.title("FloorDesign - GUI")
+        self.saved = True
         self.mapData = mapDataArray(self, (20,20))
         self.tileSelect = tileSelector(self)
         self.toolSelect = toolSelector(self)

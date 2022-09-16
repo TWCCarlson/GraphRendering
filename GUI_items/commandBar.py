@@ -3,6 +3,7 @@ import tkinter as tk
 # For new map array generation
 from GUI_items import mapDataArray, designCanvas
 from tkinter import filedialog
+from tkinter import messagebox
 
 class commandBar(tk.Menu):
     def __init__(self, parent):
@@ -26,6 +27,20 @@ class FileCommands(tk.Menu):
         self.parent.add_cascade(label="File", menu=self)
 
     def FileNew(self):
+        # Check if current work is saved
+        print(self.parent.parent.saved)
+        if self.parent.parent.saved == False:
+            # Prompt user if not
+            messageBox = tk.messagebox.askquestion(title = "Save File",
+                message="You have unsaved changes. Save your progress?")
+            if messageBox == "yes":
+                self.SaveMap()
+            else:
+                self.ContinueNewMap()
+        else:
+            self.ContinueNewMap()
+
+    def ContinueNewMap(self):
         # Prompts the user to give dimensions of a new map and updates the mapData object
         self.dialogBox = tk.Toplevel(self.parent.parent)
         self.dialogBox.title("New Map Configuration")
@@ -45,7 +60,6 @@ class FileCommands(tk.Menu):
         # Confirm button
         self.Button = tk.Button(self.dialogBox, text = "Make New Map", width = 25, command=self.NewMap)
         self.Button.grid(row=2, column=1)
-        print("new file")
 
     def NewMap(self):
         # Grab the entry field values
@@ -64,12 +78,30 @@ class FileCommands(tk.Menu):
         # Close the new map dialog
         self.dialogBox.destroy()
 
+        # Update saved state
+        self.parent.parent.saved = True
+
     def OpenMap(self):
+        # Check if current work is saved
+        if self.parent.parent.saved == False:
+            # Prompt user if not
+            messageBox = tk.messagebox.askquestion(title = "Save File",
+                message="You have unsaved changes. Save your progress?")
+            if messageBox == "yes":
+                self.SaveMap()
+            else:
+                self.ContinueOpenMap()
+        else:
+            self.ContinueOpenMap()
+
+    def ContinueOpenMap(self):
         # Open a map from a json .txt file
         path = tk.filedialog.askopenfile(title = "Open Map", filetypes = [("Text", ".txt")])
         if path != None:
             self.parent.parent.mapData.Load(path)
-        print("open map")
+
+        # Update saved state
+        self.parent.parent.saved = True
 
     def SaveMap(self):
         saveType = tk.IntVar()
@@ -88,7 +120,6 @@ class FileCommands(tk.Menu):
         # Confirm button
         confirm = tk.Button(self.dialogBox, text="Ok", width=5, command=lambda i=saveType: self.Save(i))
         confirm.pack()
-        print("save map")
 
     def Save(self, saveType):
         FTypes = [("JSON Text File", ".txt")]
@@ -96,7 +127,25 @@ class FileCommands(tk.Menu):
         path = tk.filedialog.asksaveasfilename(title="Save Map", filetypes = FTypes, defaultextension = FTypes)
         self.parent.parent.mapData.Save(path, saveType)
 
+        # Update saved state
+        self.parent.parent.saved = True
+
+        # Destroy the save dialog
+        self.dialogBox.destroy()
+        print(self.parent.parent.saved)
+
     def QuitOut(self):
+        # Check if current work is saved
+        if self.parent.parent.saved == False:
+            # Prompt user if not
+            messageBox = tk.messagebox.askquestion(title = "Save File",
+                message="You have unsaved changes. Save your progress?")
+            if messageBox == "yes":
+                self.SaveMap()
+            else:
+                self.parent.parent.destroy()
+        else:
+            self.parent.parent.destroy()
         print("quit")
         
         
