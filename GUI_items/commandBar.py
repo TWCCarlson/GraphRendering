@@ -28,7 +28,7 @@ class FileCommands(tk.Menu):
 
     def FileNew(self):
         # Check if current work is saved
-        print(self.parent.parent.saved)
+        # print(self.parent.parent.saved)
         if self.parent.parent.saved == False:
             # Prompt user if not
             messageBox = tk.messagebox.askquestion(title = "Save File",
@@ -118,6 +118,9 @@ class FileCommands(tk.Menu):
         button1.select()
 
         # Confirm button
+        # print(saveType.get())
+        print(saveType.get())
+        print("===")
         confirm = tk.Button(self.dialogBox, text="Ok", width=5, command=lambda i=saveType: self.Save(i))
         confirm.pack()
 
@@ -125,14 +128,14 @@ class FileCommands(tk.Menu):
         FTypes = [("JSON Text File", ".txt")]
         # Use asksaveasfilename to return the file name only
         path = tk.filedialog.asksaveasfilename(title="Save Map", filetypes = FTypes, defaultextension = FTypes)
-        self.parent.parent.mapData.Save(path, saveType)
+        self.parent.parent.mapData.Save(path, saveType.get())
 
         # Update saved state
         self.parent.parent.saved = True
 
         # Destroy the save dialog
         self.dialogBox.destroy()
-        print(self.parent.parent.saved)
+        # print(self.parent.parent.saved)
 
     def QuitOut(self):
         # Check if current work is saved
@@ -146,6 +149,6 @@ class FileCommands(tk.Menu):
                 self.parent.parent.destroy()
         else:
             self.parent.parent.destroy()
-        print("quit")
+        # print("quit")
         
         

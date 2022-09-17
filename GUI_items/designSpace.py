@@ -95,7 +95,7 @@ class designCanvas(tk.Canvas):
 
     def drawGridlines(self):
         # Update the canvas width in case of redraws from new/load
-        print(self.parent.parent.mapData.mapWidth)
+        # print(self.parent.parent.mapData.mapWidth)
         self.canvasWidth = self.parent.parent.mapData.mapWidth * tileSize
         self.canvasHeight = self.parent.parent.mapData.mapHeight * tileSize
 
@@ -239,13 +239,13 @@ class designCanvas(tk.Canvas):
             self.delete(mapData.canvasArray[incrementX + startX][incrementY + startY])
         mapData.canvasArray[incrementX + startX][incrementY + startY] = ' '
         mapData.mapArray[incrementX + startX][incrementY + startY] = ' '
-        mapData.imageIndexArray[self.selectedTile[0]][self.selectedTile[1]] = ' '
+        mapData.imageIndexArray[incrementX + startX][incrementY + startY] = ' '
 
         # Draw the new tile if filling
         if self.currentTool == "fill":
             paintImage = self.create_image((incrementX + startX)*tileSize, (incrementY + startY)*tileSize, image=currentImage, anchor=tk.NW)
             mapData.mapArray[incrementX + startX][incrementY + startY] = currentImagePath
             mapData.canvasArray[incrementX + startX][incrementY + startY] = paintImage
-            mapData.imageIndexArray[self.selectedTile[0]][self.selectedTile[1]] = currentImageIndex
+            mapData.imageIndexArray[incrementX + startX][incrementY + startY] = currentImageIndex
 
 

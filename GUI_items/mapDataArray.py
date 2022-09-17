@@ -12,6 +12,8 @@ import json
 from GUI_items.designSpace import designCanvas
 
 tileSize = 32
+# import pprint
+# pp = pprint.PrettyPrinter(indent=4)
 
 class mapDataArray:
     def __init__(self, parent, dims):
@@ -52,9 +54,69 @@ class mapDataArray:
         self.mapWidth = mapWidth
 
     def Save(self, path, saveType):
-        print(self.mapArray)
-        print(self.canvasArray)
+        # print(self.mapArray)
+        # print(self.canvasArray)
+        print(saveType)
+        if saveType == 1:
+            print("Pruned save")
+            self.SavePrune(path)
+        elif saveType == 2:
+            print("Save all")
+            self.SaveAll(path)
 
+    def SavePrune(self, path):
+        # Remove empty rows and columns first
+        # Pull out a column
+        colsWithIndexData = []
+        colsWithPathData = []
+        for colIndex in range(len(self.imageIndexArray)):
+            # Iterate along its cells
+            sliceContainsItem = False
+            for rowIndex in range(len(self.imageIndexArray[colIndex])):
+                if self.imageIndexArray[colIndex][rowIndex] != " ":
+                    sliceContainsItem = True
+                    # pp.pprint(colIndex)
+                    # pp.pprint(self.imageIndexArray[colIndex])
+            if sliceContainsItem == True:
+                colsWithIndexData.append(self.imageIndexArray[colIndex])
+                colsWithPathData.append(self.mapArray[colIndex])
+
+
+        # The result is a list of columns
+        # Need to iterate through a list of rows, so transpose the list of lists
+        indexTranspose = [list(i) for i in zip(*colsWithIndexData)]
+        pathTranspose = [list(i) for i in zip(*colsWithPathData)]
+
+        # From the resulting columns, pull out rows
+        # print("FULL ARRAY")
+        # pp.pprint(self.imageIndexArray)
+        # print("FULL ARRAY TRANSPOSE")
+        # imTranspose = [list(i) for i in zip(*self.imageIndexArray)]
+        # pp.pprint(imTranspose)
+        # print("RELEVANT COLUMNS ONLY")
+        # pp.pprint(transpose)
+        prunedIndexData = []
+        prunedPathData = []
+        for rowIndex in range(len(indexTranspose)):
+            # Iterate
+            sliceContainsItem = False
+            for colIndex in range(len(indexTranspose[rowIndex])):
+                if indexTranspose[rowIndex][colIndex] != " ":
+                    sliceContainsItem = True
+            if sliceContainsItem == True:
+                prunedIndexData.append(indexTranspose[rowIndex])
+                prunedPathData.append(pathTranspose[rowIndex])
+
+        # pp.pprint(self.imageIndexArray)
+        # print("RELEVANT ROWS ONLY")
+        # pp.pprint(prunedData)
+
+
+
+
+
+
+    def SaveAll(self, path):
         # Create a dictionary of all the images used
         # ^ Static, in this use case
         # Translate the path array into graphmap = (node existence, (edge directions), node type)
@@ -71,7 +133,7 @@ class mapDataArray:
             }
         }
         nodeList.append(mapDimsDict)
-        for colIndex in range(len(self.mapArray)):
+        for colIndex in range(len(self.mapArray[1])):
             for rowIndex in range(len(self.mapArray[0])):
                 # The map array contains the filepath for each tile's image
                 filePath = self.mapArray[colIndex][rowIndex]
@@ -124,7 +186,7 @@ class mapDataArray:
         # Load the new map
         mapData = json.load(path)
         for tile in mapData:
-            print(tile)
+            # print(tile)
             if "mapDimensions" in tile:
                 # Extract map dimensions
                 NewMapWidth = tile["mapDimensions"]["Xdim"]
@@ -138,7 +200,7 @@ class mapDataArray:
                 # Refresh the canvas to show new data
                 tileCanvas.update
 
-                print("Cleared map.")
+                # print("Cleared map.")
             else:
                 # Populate the map with tiles
                 # Extract the tile position and image path

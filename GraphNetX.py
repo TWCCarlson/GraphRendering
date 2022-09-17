@@ -1,7 +1,7 @@
 import networkx as netx
-import pprint
+# import pprint
 
-pretty_print = pprint.PrettyPrinter()
+# pretty_print = pprint.PrettyPrinter()
 
 # Define FloorTile class
 class FloorTile:
@@ -23,7 +23,7 @@ FloorMap.add_node('3', Coords=(0,1), TileType='Open')
 FloorMap.add_node('4', Coords=(1,1), TileType='Open')
 
 # Nicer print statement
-pretty_print.pprint(dict(FloorMap.nodes.data()))
+# pretty_print.pprint(dict(FloorMap.nodes.data()))
 
 for line in netx.generate_adjlist(FloorMap):
     print(line)
