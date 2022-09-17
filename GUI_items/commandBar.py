@@ -119,8 +119,6 @@ class FileCommands(tk.Menu):
 
         # Confirm button
         # print(saveType.get())
-        print(saveType.get())
-        print("===")
         confirm = tk.Button(self.dialogBox, text="Ok", width=5, command=lambda i=saveType: self.Save(i))
         confirm.pack()
 

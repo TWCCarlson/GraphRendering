@@ -12,8 +12,8 @@ import json
 from GUI_items.designSpace import designCanvas
 
 tileSize = 32
-# import pprint
-# pp = pprint.PrettyPrinter(indent=4)
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 class mapDataArray:
     def __init__(self, parent, dims):
@@ -56,13 +56,13 @@ class mapDataArray:
     def Save(self, path, saveType):
         # print(self.mapArray)
         # print(self.canvasArray)
-        print(saveType)
+        # print(saveType)
         if saveType == 1:
-            print("Pruned save")
+            # print("Pruned save")
             self.SavePrune(path)
         elif saveType == 2:
-            print("Save all")
-            self.SaveAll(path)
+            # print("Save all")
+            self.SaveAll(path, self.mapArray, self.imageIndexArray)
 
     def SavePrune(self, path):
         # Remove empty rows and columns first
@@ -80,7 +80,6 @@ class mapDataArray:
             if sliceContainsItem == True:
                 colsWithIndexData.append(self.imageIndexArray[colIndex])
                 colsWithPathData.append(self.mapArray[colIndex])
-
 
         # The result is a list of columns
         # Need to iterate through a list of rows, so transpose the list of lists
@@ -109,14 +108,15 @@ class mapDataArray:
 
         # pp.pprint(self.imageIndexArray)
         # print("RELEVANT ROWS ONLY")
-        # pp.pprint(prunedData)
+        # pp.pprint(prunedIndexData)
 
+        # Retranspose the array
+        prunedIndexData = [list(i) for i in zip(*prunedIndexData)]
+        prunedPathData = [list(i) for i in zip(*prunedPathData)]
 
+        self.SaveAll(path, prunedPathData, prunedIndexData)
 
-
-
-
-    def SaveAll(self, path):
+    def SaveAll(self, path, mapArray, imageIndexArray):
         # Create a dictionary of all the images used
         # ^ Static, in this use case
         # Translate the path array into graphmap = (node existence, (edge directions), node type)
@@ -124,8 +124,8 @@ class mapDataArray:
         # Pull the imagepath for each tile
         nodeList = []
         # Indicate maximum column, row dimensions in the json
-        maxCols = len(self.mapArray[0])
-        maxRows = len(self.mapArray[1])
+        maxCols = len(mapArray[0])
+        maxRows = len(mapArray[1])
         mapDimsDict = {
             "mapDimensions": {
                 "Xdim": maxCols,
@@ -133,10 +133,10 @@ class mapDataArray:
             }
         }
         nodeList.append(mapDimsDict)
-        for colIndex in range(len(self.mapArray[1])):
-            for rowIndex in range(len(self.mapArray[0])):
+        for colIndex in range(len(mapArray[1])):
+            for rowIndex in range(len(mapArray[0])):
                 # The map array contains the filepath for each tile's image
-                filePath = self.mapArray[colIndex][rowIndex]
+                filePath = mapArray[colIndex][rowIndex]
                 if filePath != ' ':
                     # Regexically grab the image name
                     fileID = re.search(r"(?<=\\tileSelectorDefaultImages\\)(.*?)(?=.png)", filePath).group()
@@ -158,7 +158,7 @@ class mapDataArray:
                             "Y": rowIndex
                         },
                         "nodeStylePath": filePath,
-                        "nodeStyleID": self.imageIndexArray[colIndex][rowIndex],
+                        "nodeStyleID": imageIndexArray[colIndex][rowIndex],
                         "nodeType": tileType,
                         "nodeEdges": tileEdgeDict
                     }
