@@ -2,6 +2,9 @@
 import tkinter as tk
 # Import special styles
 from tkinter import FLAT, RIDGE
+from copy import deepcopy
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 toolboxWidth = 180
 screenUsage = 0.75
@@ -61,6 +64,9 @@ class designCanvas(tk.Canvas):
         self.parent = parent
         self.canvasWidth = self.parent.parent.mapData.mapWidth * tileSize
         self.canvasHeight = self.parent.parent.mapData.mapHeight * tileSize
+        self.prevMapCanvasArray = ' '
+        self.prevMapMapArray = ' '
+        self.prevMapImageIndexArray = ' '
 
         # Configure canvas appearance
         self.redrawGridlines()
@@ -72,9 +78,12 @@ class designCanvas(tk.Canvas):
         # TODO: enable hotkey scrolling
 
         # Binding inputs
-        self.bind("<Button-1>", self.selectTile)    # Single click
-        self.bind("<B1-Motion>", self.selectTile)   # Click-drag
+        # Using anonymous function to package extra data alongside the event explicitly
+        self.bind("<Button-1>", lambda event, type='click': self.selectTile(event, type))    # Single click
+        self.bind("<B1-Motion>", lambda event, type='drag': self.selectTile(event, type))   # Click-drag
         self.bind("<ButtonRelease-1>", self.setBoxSelect)
+        self.bind_all("<Control-z>", self.undo)          # Undo last operation, history of 1 op
+        self.bind_all("<Control-a>", self.debug)
 
         # Render component
         self.grid(column=0, row=0, sticky=tk.NW)
@@ -100,12 +109,13 @@ class designCanvas(tk.Canvas):
         self.canvasHeight = self.parent.parent.mapData.mapHeight * tileSize
 
         # Draw lines
-        for i in range(int(self.canvasWidth/tileSize)+1):
-            self.create_line(i* tileSize, 0, i * tileSize, self.canvasWidth, fill="light gray")
         for i in range(int(self.canvasHeight/tileSize)+1):
+            self.create_line(i* tileSize, 0, i * tileSize, self.canvasWidth, fill="light gray")
+        for i in range(int(self.canvasWidth/tileSize)+1):
             self.create_line(0, i* tileSize, self.canvasHeight, i * tileSize, fill="light gray")
 
-    def selectTile(self, event):
+    def selectTile(self, event, type):
+
         # Reference to current tool
         self.currentTool = self.parent.parent.toolSelect.selectorCanvas.tool
 
@@ -118,15 +128,17 @@ class designCanvas(tk.Canvas):
         self.selectedTile = (self.selectedTileX, self.selectedTileY)
 
         # Execute click effect
-        self.setTile()
+        self.setTile(type)
 
-    def setTile(self):
+    def setTile(self, type):
         # Reference variable to the map data
         mapData = self.parent.parent.mapData
         # Reference to current tool
         self.currentTool = self.parent.parent.toolSelect.selectorCanvas.tool
 
-        if self.currentTool == "paint":
+        if self.currentTool == "paint" and  type == "click":
+            # Save current state for undo
+            self.updateHistory()
             # Capture information about what's being painted
             currentImage = self.parent.parent.tileSelect.currentImage
             currentImagePath = self.parent.parent.tileSelect.currentImagePath
@@ -145,7 +157,9 @@ class designCanvas(tk.Canvas):
             mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]] = paintImage
             mapData.imageIndexArray[self.selectedTile[0]][self.selectedTile[1]] = currentImageIndex
 
-        if self.currentTool == "erase":
+        if self.currentTool == "erase" and type == "click":
+            # Save current state for undo
+            self.updateHistory()
             # Remove whatever is on the tile
             self.delete(mapData.canvasArray[self.selectedTile[0]][self.selectedTile[1]])
             # and from the data arrays
@@ -155,6 +169,8 @@ class designCanvas(tk.Canvas):
             self.update()
 
         if self.currentTool == "fill" or self.currentTool == "fillErase":
+            # Save current state for undo
+            self.updateHistory()
             # This only draws a highlight of the region selected
             if self.parent.parent.toolSelect.boxStartPos == []:
                 # Save the initial position of the box
@@ -179,9 +195,11 @@ class designCanvas(tk.Canvas):
         # Update saved state
         self.parent.parent.saved = False
         
-
     def setBoxSelect(self, event):
         if self.currentTool == "fill" or self.currentTool == "fillErase":
+            # Save current state for undo
+            self.updateHistory()
+
             # Handle the two different kinds of area selections
             # Capture the box corner data
             self.boxStartPos = self.parent.parent.toolSelect.boxStartPos*tileSize
@@ -222,6 +240,7 @@ class designCanvas(tk.Canvas):
 
         # Update saved state
         self.parent.parent.saved = False
+        # pp.pprint(self.prevMapMapArray)
 
     def fillTile(self, incrementX, incrementY, startX, startY):
         # Ingests: the current iterative tile from the corner to begin at
@@ -248,4 +267,51 @@ class designCanvas(tk.Canvas):
             mapData.canvasArray[incrementX + startX][incrementY + startY] = paintImage
             mapData.imageIndexArray[incrementX + startX][incrementY + startY] = currentImageIndex
 
+    def updateHistory(self):
+        mapData = self.parent.parent.mapData
+        # pp.pprint(self.prevMapMapArray)
+        # pp.pprint(mapData.imageIndexArray)
+        self.prevMapCanvasArray = deepcopy(mapData.canvasArray)
+        self.prevMapMapArray = deepcopy(mapData.mapArray)
+        self.prevMapImageIndexArray = deepcopy(mapData.imageIndexArray)
+        # pp.pprint(self.prevMapMapArray)
+        # pp.pprint(self.prevMapCanvasArray)
+        # self.undo()
+        # pp.pprint(mapData.mapArray)
 
+    def undo(self, *args):
+        # pp.pprint(self.prevMapMapArray)
+        mapData = self.parent.parent.mapData
+        tileSelector = self.parent.parent.tileSelect
+        # Canvas array is special, it only contains ints referring to the tkinter image canvasses
+        # Compare diffs between mapArray and prevMapArray
+        for i in range(len(mapData.mapArray)):
+            for j in range(len(mapData.mapArray[i])):
+                # print(mapData.mapArray[i][j])
+                if mapData.mapArray[i][j] != self.prevMapMapArray[i][j]:
+                    print("DIFF,")
+                    self.delete(mapData.canvasArray[i][j])
+                    if self.prevMapImageIndexArray[i][j] != ' ':
+                        # If the tile wasn't empty before, create the new tile image
+                        # Save current tool selection
+                        userToolID = tileSelector.currentImageIndex
+                        # Set the current image
+                        tileSelector.selectorCanvas.selectTile(self.prevMapImageIndexArray[i][j])
+                        # Paint the image back into existence
+                        paintImage = self.create_image(i*tileSize, j*tileSize, image=tileSelector.currentImage, anchor=tk.NW)
+                        # Save it to the canvas
+                        mapData.canvasArray[i][j] = paintImage
+                        # Return the user's previously selected tool
+                        tileSelector.selectorCanvas.selectTile(userToolID)
+        mapData.mapArray = deepcopy(self.prevMapMapArray)
+        mapData.imageIndexArray = deepcopy(self.prevMapImageIndexArray)
+        self.update()
+
+    def debug(self, *args):
+        mapData = self.parent.parent.mapData
+        # pp.pprint(self.prevMapMapArray)
+        pp.pprint(mapData.imageIndexArray)
+        # pp.pprint(mapData.canvasArray)
+        # pp.pprint(mapData.canvasArray[0][0])
+        # pp.pprint(self.type(mapData.canvasArray[0][0]))
+        # pp.pprint(self.itemcget(mapData.canvasArray[0][0], 'image'))

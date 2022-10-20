@@ -17,7 +17,7 @@ class App(tk.Tk):
         tk.Tk.__init__(self) # Initialize main window
         self.title("FloorDesign - GUI")
         self.saved = True
-        self.mapData = mapDataArray(self, (20,20))
+        self.mapData = mapDataArray(self, (10, 10))
         self.tileSelect = tileSelector(self)
         self.toolSelect = toolSelector(self)
         self.canvas = designSpace(self)
