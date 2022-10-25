@@ -217,6 +217,6 @@ class mapDataArray:
                 tileCanvas.selectedTile = (tilePosition["X"], tilePosition["Y"])
 
                 # Draw the tile
-                tileCanvas.setTile()
+                tileCanvas.setTile("click")
             # print(tile.nodePosition)
         # print(json.dumps(mapData, indent=4))
