@@ -22,6 +22,10 @@ class App(tk.Tk):
         self.toolSelect = toolSelector(self)
         self.canvas = designSpace(self)
         self.commandBar = commandBar(self)
+
+        # Reference dependencies
+        self.mapData.buildReferences(self)
+
         self.mainloop() # Blocking call to render the app
 
 app = App()

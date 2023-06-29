@@ -24,8 +24,12 @@ class mapDataArray:
 
         self.generateNewMap(self.mapHeight, self.mapWidth)
 
+    def buildReferences(self, parent):
+        self.canvasReference = self.parent.canvas.canvas
+
     def generateNewMap(self, mapHeight, mapWidth):
         # Create an integer array 
+        print(f"Generating new map: {mapWidth} x {mapHeight}")
         self.mapArray = []
         for i in range(mapHeight):
             row = []
@@ -52,6 +56,14 @@ class mapDataArray:
         # Update the maximum dims for reference elsewhere
         self.mapHeight = mapHeight
         self.mapWidth = mapWidth
+
+        try:
+            self.canvasReference.destroy()
+            print("Canvas destroyed")
+            self.parent.canvas.buildCanvas()
+            self.canvasReference.update()
+        except:
+            print("Canvas reference not yet built, proceeding with default")
 
     def Save(self, path, saveType):
         # print(self.mapArray)

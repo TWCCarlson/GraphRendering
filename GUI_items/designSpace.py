@@ -29,12 +29,7 @@ class designSpace(tk.Frame):
         self.ybar = tk.Scrollbar(self, orient="vertical")
         self.xbar = tk.Scrollbar(self, orient="horizontal")
 
-        # Build the canvas inside the frame
-        self.canvas = designCanvas(self)
-        self.ybar["command"] = self.canvas.yview
-        self.xbar["command"] = self.canvas.xview
-        self.ybar.grid(column=1, row=0, sticky="ns")
-        self.xbar.grid(column=0, row=1, sticky="ew")
+        self.buildCanvas()
 
         # Render component
         self.grid_propagate(False)
@@ -57,6 +52,14 @@ class designSpace(tk.Frame):
 
     def shiftMousewheelAction(self, event):
         self.canvas.xview_scroll(int(-1*(event.delta/120)), "units")
+
+    def buildCanvas(self):
+        # Build the canvas inside the frame
+        self.canvas = designCanvas(self)
+        self.ybar["command"] = self.canvas.yview
+        self.xbar["command"] = self.canvas.xview
+        self.ybar.grid(column=1, row=0, sticky="ns")
+        self.xbar.grid(column=0, row=1, sticky="ew")
 
 class designCanvas(tk.Canvas):
     def __init__(self, parent):
