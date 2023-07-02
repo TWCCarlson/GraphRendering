@@ -59,9 +59,7 @@ class mapDataArray:
 
         try:
             self.canvasReference.destroy()
-            print("Canvas destroyed")
             self.parent.canvas.buildCanvas()
-            self.canvasReference.update()
         except:
             print("Canvas reference not yet built, proceeding with default")
 
