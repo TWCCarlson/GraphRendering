@@ -70,6 +70,7 @@ class designCanvas(tk.Canvas):
         self.prevMapCanvasArray = ' '
         self.prevMapMapArray = ' '
         self.prevMapImageIndexArray = ' '
+        self.currentTool = "paint"  # Default value for loading the 
 
         # Configure canvas appearance
         self.redrawGridlines()

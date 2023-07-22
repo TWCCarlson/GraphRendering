@@ -58,8 +58,10 @@ class mapDataArray:
         self.mapWidth = mapWidth
 
         try:
-            self.canvasReference.destroy()
-            self.parent.canvas.buildCanvas()
+            # self.canvasReference.destroy()
+            # self.parent.canvas.buildCanvas()
+            self.parent.canvas.canvas.redrawGridlines()
+            pass
         except:
             print("Canvas reference not yet built, proceeding with default")
 
