@@ -28,4 +28,4 @@ class App(tk.Tk):
 
         self.mainloop() # Blocking call to render the app
 
-app = App()
+app = App() 

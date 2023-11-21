@@ -74,6 +74,7 @@ class mapDataArray:
             self.SavePrune(path)
         elif saveType == 2:
             # print("Save all")
+            pp.pprint(self.mapArray)
             self.SaveAll(path, self.mapArray, self.imageIndexArray)
 
     def SavePrune(self, path):
