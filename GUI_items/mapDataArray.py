@@ -137,8 +137,9 @@ class mapDataArray:
         # Pull the imagepath for each tile
         nodeList = []
         # Indicate maximum column, row dimensions in the json
-        maxCols = len(mapArray[0])
-        maxRows = len(mapArray[1])
+        pp.pprint(mapArray)
+        maxCols = len(mapArray)
+        maxRows = len(mapArray[0])
         mapDimsDict = {
             "mapDimensions": {
                 "Xdim": maxCols,
@@ -146,8 +147,8 @@ class mapDataArray:
             }
         }
         nodeList.append(mapDimsDict)
-        for colIndex in range(len(mapArray[1])):
-            for rowIndex in range(len(mapArray[0])):
+        for colIndex in range(len(mapArray[0])):
+            for rowIndex in range(len(mapArray)):
                 # The map array contains the filepath for each tile's image
                 filePath = mapArray[colIndex][rowIndex]
                 if filePath != ' ':

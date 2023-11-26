@@ -111,7 +111,7 @@ class FileCommands(tk.Menu):
         self.dialogBox.title("Choose save method")
 
         # Option buttons
-        button1 = tk.Radiobutton(self.dialogBox, text="Save only the region containing tiles", variable=saveType, value=1, state=tk.DISABLED)
+        button1 = tk.Radiobutton(self.dialogBox, text="Save only the region containing tiles", variable=saveType, value=1)
         button2 = tk.Radiobutton(self.dialogBox, text="Save entire map including empty edges", variable=saveType, value=2)
         button1.pack(anchor = tk.W)
         button2.pack(anchor = tk.W)
