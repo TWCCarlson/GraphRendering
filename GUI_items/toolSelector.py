@@ -51,10 +51,20 @@ class selectorCanvas(tk.Canvas):
         self.tileSize = buttonSize
 
         # Image paths
-        self.paintTool_img = Tile('GUI_items/toolSelectorDefaultImages/Pointer.png', buttonSize).image
-        self.eraseTool_img = Tile('GUI_items/toolSelectorDefaultImages/Eraser.png', buttonSize).image
-        self.fillTool_img = Tile('GUI_items/toolSelectorDefaultImages/boxSelect.png', buttonSize).image
-        self.fillErase_img = Tile('GUI_items/toolSelectorDefaultImages/boxErase.png', buttonSize).image
+        curdir = os.path.dirname(__file__)
+        self.pointerDir = os.path.join(curdir, 'toolSelectorDefaultImages/Pointer.png')
+        self.pointerActiveDir = os.path.join(curdir, 'toolSelectorDefaultImages/PointerActive.png')
+        self.eraserDir = os.path.join(curdir, 'toolSelectorDefaultImages/Eraser.png')
+        self.eraserActiveDir = os.path.join(curdir, 'toolSelectorDefaultImages/EraserActive.png')
+        self.boxSelectDir = os.path.join(curdir, 'toolSelectorDefaultImages/boxSelect.png')
+        self.boxSelectActiveDir = os.path.join(curdir, 'toolSelectorDefaultImages/boxSelectActive.png')
+        self.boxEraseDir = os.path.join(curdir, 'toolSelectorDefaultImages/boxErase.png')
+        self.boxEraseActiveDir = os.path.join(curdir, 'toolSelectorDefaultImages/boxEraseActive.png')
+
+        self.paintTool_img = Tile(self.pointerDir, buttonSize).image
+        self.eraseTool_img = Tile(self.eraserDir, buttonSize).image
+        self.fillTool_img = Tile(self.boxSelectDir, buttonSize).image
+        self.fillErase_img = Tile(self.boxEraseDir, buttonSize).image
 
         # Paint tool
         self.paintTool = tk.Button(self, command=self.paint, image=self.paintTool_img, width=buttonWidth)
@@ -78,51 +88,51 @@ class selectorCanvas(tk.Canvas):
     def paint(self):
         self.tool = "paint"
         # Set the painter image to show activity
-        self.paint_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/PointerActive.png')
+        self.paint_img = tk.PhotoImage(file=self.pointerActiveDir)
         self.paintTool.config(image=self.paint_img)
         # Deactivate the other images
-        self.erase_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/Eraser.png')
+        self.erase_img = tk.PhotoImage(file=self.eraserDir)
         self.eraseTool.config(image=self.erase_img)
-        self.fill_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/boxSelect.png')
+        self.fill_img = tk.PhotoImage(file=self.boxSelectDir)
         self.fillTool.config(image=self.fill_img)
-        self.fillErase_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/boxErase.png')
+        self.fillErase_img = tk.PhotoImage(file=self.boxEraseDir)
         self.fillErase.config(image=self.fillErase_img)
 
     def erase(self):
         self.tool = "erase"
         # Set the eraser image to show activity
-        self.erase_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/EraserActive.png')
+        self.erase_img = tk.PhotoImage(file=self.eraserActiveDir)
         self.eraseTool.config(image=self.erase_img)
         # Deactivate the other images
-        self.paint_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/Pointer.png')
+        self.paint_img = tk.PhotoImage(file=self.pointerDir)
         self.paintTool.config(image=self.paint_img)
-        self.fill_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/boxSelect.png')
+        self.fill_img = tk.PhotoImage(file=self.boxSelectDir)
         self.fillTool.config(image=self.fill_img)
-        self.fillErase_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/boxErase.png')
+        self.fillErase_img = tk.PhotoImage(file=self.boxEraseDir)
         self.fillErase.config(image=self.fillErase_img)
 
     def fill(self):
         self.tool = "fill"
         # Set the eraser image to show activity
-        self.fill_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/boxSelectActive.png')
+        self.fill_img = tk.PhotoImage(file=self.boxSelectActiveDir)
         self.fillTool.config(image=self.fill_img)
         # Deactivate the other images
-        self.paint_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/Pointer.png')
+        self.paint_img = tk.PhotoImage(file=self.pointerDir)
         self.paintTool.config(image=self.paint_img)
-        self.erase_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/Eraser.png')
+        self.erase_img = tk.PhotoImage(file=self.eraserDir)
         self.eraseTool.config(image=self.erase_img)
-        self.fillErase_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/boxErase.png')
+        self.fillErase_img = tk.PhotoImage(file=self.boxEraseDir)
         self.fillErase.config(image=self.fillErase_img)
         
     def fillErase(self):
         self.tool = "fillErase"
         # Set the image to show activity
-        self.fillErase_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/boxEraseActive.png')
+        self.fillErase_img = tk.PhotoImage(file=self.boxEraseActiveDir)
         self.fillErase.config(image=self.fillErase_img)
         # Deactivate the other images
-        self.paint_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/Pointer.png')
+        self.paint_img = tk.PhotoImage(file=self.pointerDir)
         self.paintTool.config(image=self.paint_img)
-        self.erase_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/Eraser.png')
+        self.erase_img = tk.PhotoImage(file=self.eraserDir)
         self.eraseTool.config(image=self.erase_img)
-        self.fill_img = tk.PhotoImage(file='GUI_items/toolSelectorDefaultImages/boxSelect.png')
+        self.fill_img = tk.PhotoImage(file=self.boxSelectDir)
         self.fillTool.config(image=self.fill_img)
