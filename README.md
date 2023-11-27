@@ -10,6 +10,9 @@ This application is very much a prototype and the resulting maps could be develo
 
 It is likely this will become obsolete and incorporated directly into the other application I have developed in the future, with an original take on the codebase.
 
+# Usage
+Either use the packaged application in /dist/VisualFloorDesigner/ or create an environment and execute the toplevel VisualFloorDesigner.py.
+
 # License
 This application is a modified version of [Tile Basic](https://multilingual-coder.github.io/tilebasic/about.html), which is distributed under the GNU General Public Licence. 
 You can view the licence here: [GNU GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
