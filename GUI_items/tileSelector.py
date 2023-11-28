@@ -77,7 +77,7 @@ class selectorCanvas(tk.Canvas):
         # Retrieve current system directory filepath
         curdir = os.path.dirname(__file__)
         # Add the target directory filepath
-        tardir = os.path.join(curdir, 'tileSelectorDefaultImages')
+        tardir = os.path.abspath(os.path.join(curdir, 'tileSelectorDefaultImages'))
         # Iterate over all items found in the directory
         for path in os.listdir(tardir):
             # Verify file-ness

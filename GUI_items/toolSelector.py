@@ -52,14 +52,14 @@ class selectorCanvas(tk.Canvas):
 
         # Image paths
         curdir = os.path.dirname(__file__)
-        self.pointerDir = os.path.join(curdir, 'toolSelectorDefaultImages/Pointer.png')
-        self.pointerActiveDir = os.path.join(curdir, 'toolSelectorDefaultImages/PointerActive.png')
-        self.eraserDir = os.path.join(curdir, 'toolSelectorDefaultImages/Eraser.png')
-        self.eraserActiveDir = os.path.join(curdir, 'toolSelectorDefaultImages/EraserActive.png')
-        self.boxSelectDir = os.path.join(curdir, 'toolSelectorDefaultImages/boxSelect.png')
-        self.boxSelectActiveDir = os.path.join(curdir, 'toolSelectorDefaultImages/boxSelectActive.png')
-        self.boxEraseDir = os.path.join(curdir, 'toolSelectorDefaultImages/boxErase.png')
-        self.boxEraseActiveDir = os.path.join(curdir, 'toolSelectorDefaultImages/boxEraseActive.png')
+        self.pointerDir = os.path.abspath(os.path.join(curdir, 'toolSelectorDefaultImages/Pointer.png'))
+        self.pointerActiveDir = os.path.abspath(os.path.join(curdir, 'toolSelectorDefaultImages/PointerActive.png'))
+        self.eraserDir = os.path.abspath(os.path.join(curdir, 'toolSelectorDefaultImages/Eraser.png'))
+        self.eraserActiveDir = os.path.abspath(os.path.join(curdir, 'toolSelectorDefaultImages/EraserActive.png'))
+        self.boxSelectDir = os.path.abspath(os.path.join(curdir, 'toolSelectorDefaultImages/boxSelect.png'))
+        self.boxSelectActiveDir = os.path.abspath(os.path.join(curdir, 'toolSelectorDefaultImages/boxSelectActive.png'))
+        self.boxEraseDir = os.path.abspath(os.path.join(curdir, 'toolSelectorDefaultImages/boxErase.png'))
+        self.boxEraseActiveDir = os.path.abspath(os.path.join(curdir, 'toolSelectorDefaultImages/boxEraseActive.png'))
 
         self.paintTool_img = Tile(self.pointerDir, buttonSize).image
         self.eraseTool_img = Tile(self.eraserDir, buttonSize).image
