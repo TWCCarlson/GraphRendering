@@ -8,7 +8,7 @@ This application was used as a jumping off point to quickly generate graphs comp
 
 This application is very much a prototype and the resulting maps could be developed without GUI. See the thesis repository for documentation regarding this.
 
-It is likely this will become obsolete and incorporated directly into the other application I have developed in the future, with an original take on the codebase.
+It is likely this will become obsolete and incorporated directly into the other application [(FleetBench)](https://github.com/TWCCarlson/RoboWarehousingSim) I have developed in the future, with an original take on the codebase.
 
 # Usage
 Either use the packaged application in /dist/VisualFloorDesigner/ or create an environment and execute the toplevel VisualFloorDesigner.py.
